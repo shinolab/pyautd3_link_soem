@@ -2,9 +2,13 @@ from datetime import timedelta
 
 import pytest
 
-from pyautd3_link_soem import SOEM, ProcessPriority, RemoteSOEM, Status, SyncMode, ThreadPriority, TimerStrategy
+from pyautd3_link_soem import SOEM, ProcessPriority, RemoteSOEM, Status, SyncMode, ThreadPriority, TimerStrategy, tracing_init
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as NativeSOEM
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as _Status
+
+
+def test_tracing_init():
+    tracing_init()
 
 
 def test_soem_adapers():

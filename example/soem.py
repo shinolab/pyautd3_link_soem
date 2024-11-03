@@ -1,9 +1,9 @@
 import os
 
 import numpy as np
-from pyautd3 import AUTD3, Controller, Focus, Hz, Sine, tracing_init
+from pyautd3 import AUTD3, Controller, Focus, Hz, Sine
 
-from pyautd3_link_soem import SOEM, Status
+from pyautd3_link_soem import SOEM, Status, tracing_init
 
 
 def err_handler(slave: int, status: Status) -> None:
