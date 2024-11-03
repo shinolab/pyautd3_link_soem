@@ -11,6 +11,9 @@ from .thread_priority import ThreadPriority
 
 
 def tracing_init() -> None:
+    from pyautd3 import tracing_init as autd3_tracing_init
+
+    autd3_tracing_init()
     with contextlib.suppress(BaseException):
         Soem().link_soem_tracing_init()
 

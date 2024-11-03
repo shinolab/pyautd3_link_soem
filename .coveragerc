@@ -9,3 +9,8 @@ exclude_lines =
     pragma: no cover
 
     TracingInitWithFile
+
+[run]
+omit =
+    pyautd3_link_soem/native_methods/autd3capi_link_soem.py
+    pyautd3_link_soem/native_methods/__init__.py
