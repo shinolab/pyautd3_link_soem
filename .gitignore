@@ -134,13 +134,12 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-pyautd3_link_soem/bin/
 .vscode/
 
-LICENSE.txt
-ThirdPartyNotice.txt
+pyautd3_link_soem/bin/
+pyautd3_link_soem/LICENSE.txt
+pyautd3_link_soem/ThirdPartyNotice.txt
 setup.cfg
-*.png
 VERSION
 *.zip
 *.tar.gz
