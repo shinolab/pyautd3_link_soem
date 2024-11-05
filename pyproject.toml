@@ -1,11 +1,11 @@
 [project]
 name = "pyautd3_link_soem"
 authors = [{ name = "Shun Suzuki", email = "suzuki@hapis.k.u-tokyo.ac.jp" }]
-version = "29.0.0rc4"
+version = "29.0.0rc5"
 description = "autd3-link-soem library wrapper for python"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["numpy>=2", "pyautd3==29.0.0rc4"]
+dependencies = ["numpy>=2", "pyautd3==29.0.0rc5"]
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

@@ -25,4 +25,4 @@ pyautd3.tracing_init = tracing_init
 __all__ = ["SOEM", "RemoteSOEM", "Status", "ThreadPriority", "EtherCATAdapter", "ProcessPriority", "SyncMode", "TimerStrategy"]
 
 
-__version__ = "29.0.0rc4"
+__version__ = "29.0.0rc5"

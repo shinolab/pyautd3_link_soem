@@ -10,7 +10,7 @@ import shutil
 import tarfile
 import urllib.request
 
-from tools.autd3_build_utils.autd3_build_utils import BaseConfig, err, fetch_submodule, rm_glob_f, rrmdir, run_command, working_dir
+from tools.autd3_build_utils.autd3_build_utils import BaseConfig, err, fetch_submodule, remove, rremove, run_command, working_dir
 from tools.autd3_build_utils.pyi_generator import PyiGenerator
 
 
@@ -173,7 +173,7 @@ def copy_dll(config: Config) -> None:  # noqa: PLR0912
     shutil.copyfile("LICENSE", "pyautd3_link_soem/LICENSE.txt")
     shutil.copyfile("ThirdPartyNotice.txt", "pyautd3_link_soem/ThirdPartyNotice.txt")
 
-    rrmdir(pathlib.Path("bin"))
+    remove("bin")
 
     with pathlib.Path("VERSION").open(mode="w") as f:
         f.write(version)
@@ -225,18 +225,18 @@ def py_cov(args) -> None:  # noqa: ANN001
 
 
 def py_clear(_) -> None:  # noqa: ANN001
-    pathlib.Path("setup.cfg").unlink(missing_ok=True)
-    pathlib.Path(".coverage").unlink(missing_ok=True)
-    pathlib.Path("coverage.xml").unlink(missing_ok=True)
-    pathlib.Path("ThirdPartyNotice.txt").unlink(missing_ok=True)
-    pathlib.Path("VERSION").unlink(missing_ok=True)
-    rrmdir(pathlib.Path("dist"))
-    rrmdir(pathlib.Path("build"))
-    rrmdir(pathlib.Path("pyautd3_link_soem.egg-info"))
-    rrmdir(pathlib.Path("pyautd3_link_soem/bin"))
-    rrmdir(pathlib.Path(".mypy_cache"))
-    rrmdir(pathlib.Path("htmlcov"))
-    rm_glob_f("./**/__pycache__/**/")
+    remove("setup.cfg")
+    remove(".coverage")
+    remove("coverage.xml")
+    remove("ThirdPartyNotice.txt")
+    remove("VERSION")
+    remove("dist")
+    remove("build")
+    remove("pyautd3_link_soem.egg-info")
+    remove("pyautd3_link_soem/bin")
+    remove(".mypy_cache")
+    remove("htmlcov")
+    rremove("./**/__pycache__/**/")
 
 
 def util_update_ver(args) -> None:  # noqa: ANN001
@@ -256,39 +256,27 @@ def util_update_ver(args) -> None:  # noqa: ANN001
         pkg_version = version
 
     with working_dir("."):
-        with pathlib.Path("pyautd3_link_soem/__init__.py").open() as f:
-            content = f.read()
-            content = re.sub(
-                r'__version__ = "(.*)"',
-                f'__version__ = "{version}"',
-                content,
-                flags=re.MULTILINE,
-            )
-        with pathlib.Path("pyautd3_link_soem/__init__.py").open("w") as f:
-            f.write(content)
+        f = pathlib.Path("pyautd3_link_soem/__init__.py")
+        content = f.read_text()
+        content = re.sub(
+            r'__version__ = "(.*)"',
+            f'__version__ = "{version}"',
+            content,
+            flags=re.MULTILINE,
+        )
+        f.write_text(content)
 
-        with pathlib.Path("setup.cfg.template").open() as f:
-            content = f.read()
-            content = re.sub(r"version = (.*)", f"version = {pkg_version}", content, flags=re.MULTILINE)
-        with pathlib.Path("setup.cfg.template").open("w") as f:
-            f.write(content)
-
-        with pathlib.Path("pyproject.toml").open() as f:
-            content = f.read()
-            content = re.sub(r"^version = (.*)", f'version = "{pkg_version}"', content, flags=re.MULTILINE)
-        with pathlib.Path("pyproject.toml").open("w") as f:
-            f.write(content)
+        f = pathlib.Path("pyproject.toml")
+        content = f.read_text()
+        content = re.sub(r"^version = (.*)", f'version = "{pkg_version}"', content, flags=re.MULTILINE)
+        content = re.sub(r'"pyautd3==(.*)"', f'"pyautd3=={pkg_version}"', content)
+        f.write_text(content)
 
 
 def util_generate_wrapper(_) -> None:  # noqa: ANN001
     if shutil.which("cargo") is not None:
         with working_dir("tools/wrapper-generator"):
-            run_command(
-                [
-                    "cargo",
-                    "run",
-                ],
-            )
+            run_command(["cargo", "run"])
     else:
         err("cargo is not installed. Skip generating wrapper.")
 
@@ -298,9 +286,9 @@ def command_help(args) -> None:  # noqa: ANN001
 
 
 if __name__ == "__main__":
-    fetch_submodule()
-
     with working_dir(pathlib.Path(__file__).parent):
+        fetch_submodule()
+
         parser = argparse.ArgumentParser(description="pyautd3_link_soem build script")
         subparsers = parser.add_subparsers()
 
