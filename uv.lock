@@ -219,26 +219,26 @@ wheels = [
 
 [[package]]
 name = "pyautd3"
-version = "29.0.0rc4"
+version = "29.0.0rc5.post1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "forbiddenfruit" },
     { name = "numpy" },
     { name = "polars" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ae/78/cb84f25ffda38b3e36d5c0dc73d60aeac919a1ce2d48d6f7b48e4380ef1b/pyautd3-29.0.0rc4.tar.gz", hash = "sha256:37a8e23e011814f4025dd79af7da7f1d8875e6ca3c023715ee6c8c0ddaccb492", size = 8127361 }
+sdist = { url = "https://files.pythonhosted.org/packages/c8/89/d178bb7cd4e672df77d99ecd76ed58a6e8fd2a95e966eead982e99b62c38/pyautd3-29.0.0rc5.post1.tar.gz", hash = "sha256:3359d5448a395ba60e38413cf2919a2589a4262a2a13943a22e4945f36a60dab", size = 8971441 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/10/40f99a2aa9d059d1a02fb6e4dc6185fbfda103b25ecd2c94a62733de930f/pyautd3-29.0.0rc4-py3-none-linux_armv7l.whl", hash = "sha256:ee695db846eed1bcf7c55ad4bc9059a47fbad6a06eaa7d25820f8cc39b324f58", size = 9299495 },
-    { url = "https://files.pythonhosted.org/packages/f2/81/b3dc3b4a3d84623e28cdb9019593efd63453746f9e71f507a108d3158a08/pyautd3-29.0.0rc4-py3-none-macosx_11_0_arm64.whl", hash = "sha256:6a0160a65db78a5fae467b4e4d7c8f958b92c4a21865353fb12a14827c9d3b83", size = 8215592 },
-    { url = "https://files.pythonhosted.org/packages/15/af/94191f1a332eebad2c27b585d2ed66779dc66acefc4ec9b3c3bbd9205229/pyautd3-29.0.0rc4-py3-none-manylinux1_x86_64.whl", hash = "sha256:c38e08cc84b7414af0acf46ca6de9605fd080d61b116ad53f6e1c908cc514869", size = 9999619 },
-    { url = "https://files.pythonhosted.org/packages/71/b4/b50cad0c1df3e1f490797af9664b0619cfd85dfd338ceb41c0e5afec1026/pyautd3-29.0.0rc4-py3-none-manylinux2014_aarch64.whl", hash = "sha256:8894b25eee72d685cdd7b4060e315cb2ea844cfe1561ce93c3c57dfbdcbe889e", size = 8984964 },
-    { url = "https://files.pythonhosted.org/packages/ca/5f/9577175fb53eb91448de2ac8c472168d9ce22795cc0906ec025e1c2d0afc/pyautd3-29.0.0rc4-py3-none-win_amd64.whl", hash = "sha256:d18ecdc4154b4d35c0b6787effc2ad0c9b05d09fc1e6f49c1a9e23ca5d1aa211", size = 9713502 },
-    { url = "https://files.pythonhosted.org/packages/f3/e8/d0a1aff7d6c55728f9d197eca349088554dccdd47ff59e881c92150ff4e1/pyautd3-29.0.0rc4-py3-none-win_arm64.whl", hash = "sha256:2231221c458b0b9adf83dc8e0e141c3b9ca10924f8bcc33d0bd5741018ab5335", size = 9102900 },
+    { url = "https://files.pythonhosted.org/packages/d2/d0/6e6c758bdb8301d7cde81e282f3952825046e4b7c4e4fc6abfca146e6209/pyautd3-29.0.0rc5.post1-py3-none-linux_armv7l.whl", hash = "sha256:226aea44b4481e84b0bd15fea760e3996146fd138b9105de8a21cbf9da47d8ed", size = 9051027 },
+    { url = "https://files.pythonhosted.org/packages/9f/0f/e8f582a5d535492c4f0ca57e7c50e5cf694e0938e68ae73a6c0e1a1da615/pyautd3-29.0.0rc5.post1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:fef63a2b851b216a753d134f78db759ca096330ee697ba00c9719a29f4b2e0de", size = 8183293 },
+    { url = "https://files.pythonhosted.org/packages/fb/d4/4c10560fcbf9124e1fa202d5374f8a8855b0a266b670d98ec7a11b4c07d3/pyautd3-29.0.0rc5.post1-py3-none-manylinux1_x86_64.whl", hash = "sha256:5867387db0f9d439843cad107db291b523651639dfda968911710b47702525f7", size = 9751327 },
+    { url = "https://files.pythonhosted.org/packages/d4/59/825426eab652955ec05794fece387f700749805a13a2945353d6a1e07245/pyautd3-29.0.0rc5.post1-py3-none-manylinux2014_aarch64.whl", hash = "sha256:d5c01d0e25685daf3016a9b4aab0869956b0939ce94764f26e91f6b29118d94d", size = 8740996 },
+    { url = "https://files.pythonhosted.org/packages/f6/de/914a29340e7a77e74f24303fc1347dc6de39f9d45b069ec04b836d51c116/pyautd3-29.0.0rc5.post1-py3-none-win_amd64.whl", hash = "sha256:33ab6c7d900231dc8607b11a054d6dc00f9ebbbbd951ede11f487577b64f9228", size = 9213810 },
+    { url = "https://files.pythonhosted.org/packages/e0/9a/aa2392c0eee6aade6910ed8b97a80bf6666c539ffb55c6933e3ebacdfa80/pyautd3-29.0.0rc5.post1-py3-none-win_arm64.whl", hash = "sha256:ed711eb84dd1acc77d85010314e364bf806c3bcd75e8645c5e26f2f3b4faed35", size = 8664979 },
 ]
 
 [[package]]
 name = "pyautd3-link-soem"
-version = "29.0.0rc5"
+version = "29.0.0rc5.post1"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
@@ -260,7 +260,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "numpy", specifier = ">=2" },
-    { name = "pyautd3", specifier = "==29.0.0rc4" },
+    { name = "pyautd3", specifier = "==29.0.0rc5.post1" },
 ]
 
 [package.metadata.requires-dev]
