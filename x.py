@@ -10,7 +10,7 @@ import shutil
 import tarfile
 import urllib.request
 
-from tools.autd3_build_utils.autd3_build_utils import BaseConfig, err, fetch_submodule, remove, rremove, run_command, working_dir
+from tools.autd3_build_utils.autd3_build_utils import BaseConfig, err, fetch_submodule, remove, rremove, run_command, substitute_in_file, working_dir
 from tools.autd3_build_utils.pyi_generator import PyiGenerator
 
 
@@ -18,7 +18,7 @@ def gen_pyi() -> None:
     re_typevar = re.compile(r"(.*) = TypeVar\((.*)\)")
     files = pathlib.Path("pyautd3_link_soem").rglob("*.py")
     for file in files:
-        with file.open(encoding="utf8") as f:
+        with file.open(encoding="utf-8") as f:
             content = f.read()
             tree = ast.parse(content, type_comments=True)
             generator = PyiGenerator()
@@ -43,32 +43,12 @@ def gen_pyi() -> None:
 
 
 class Config(BaseConfig):
-    release: bool
-    target: str | None
-    arch: str
 
     def __init__(self, args) -> None:  # noqa: ANN001
-        super().__init__()
-
-        self.release = hasattr(args, "release") and args.release
-
-        machine = platform.machine().lower()
-        if hasattr(args, "arch") and args.arch is not None:
-            machine = args.arch.lower()
-        if machine in ["amd64", "x86_64"]:
-            self.arch = "x64"
-        elif machine in ["arm64", "aarch64"]:
-            self.arch = "aarch64"
-        elif machine in ["arm32", "armv7l"]:
-            self.arch = "armv7l"
-        else:
-            err(f"Unsupported platform: {machine}")
+        super().__init__(args)
 
 
 def build_wheel(config: Config) -> None:
-    cfg_template_file = pathlib.Path("setup.cfg.template")
-    cfg_file = pathlib.Path("setup.cfg")
-
     plat_name: str
     if config.is_windows():
         match config.arch:
@@ -76,8 +56,6 @@ def build_wheel(config: Config) -> None:
                 plat_name = "win-amd64"
             case "aarch64":
                 plat_name = "win-arm64"
-            case _:
-                err(f"Unsupported architecture: {config.arch}")
     elif config.is_macos():
         plat_name = "macosx-11-0-arm64"
     elif config.is_linux():
@@ -88,11 +66,7 @@ def build_wheel(config: Config) -> None:
                 plat_name = "manylinux2014_aarch64"
             case "armv7l":
                 plat_name = "linux_armv7l"
-    with cfg_template_file.open() as setup:
-        content = setup.read()
-        content = content.replace(r"${plat_name}", plat_name)
-        with cfg_file.open("w") as f:
-            f.write(content)
+    substitute_in_file("setup.cfg.template", [("plat_name = PLATNAME", f"plat_name = {plat_name}")], target_file="setup.cfg")
     run_command(["uv", "build"])
 
 
@@ -106,16 +80,15 @@ def should_update_dll(config: Config, version: str) -> bool:
     elif config.is_linux() and not pathlib.Path("pyautd3_link_soem/bin/libautd3capi_link_soem.so").exists():
         return True
 
-    if not pathlib.Path("VERSION").exists():
+    version_file = pathlib.Path("VERSION")
+    if not version_file.exists():
         return True
 
-    with pathlib.Path("VERSION").open() as f:
-        old_version = f.read().strip()
-
+    old_version = version_file.read_text().strip()
     return old_version != version
 
 
-def copy_dll(config: Config) -> None:  # noqa: PLR0912
+def copy_dll(config: Config) -> None:
     with pathlib.Path("pyautd3_link_soem/__init__.py").open() as f:
         content = f.read()
         version = re.search(r'__version__ = "(.*)"', content).group(1).split(".")
@@ -131,112 +104,69 @@ def copy_dll(config: Config) -> None:  # noqa: PLR0912
     if not should_update_dll(config, version):
         return
 
-    pathlib.Path("pyautd3_link_soem/bin").mkdir(exist_ok=True)
-    if config.is_windows():
-        match config.arch:
-            case "x64":
-                url = f"https://github.com/shinolab/autd3-capi-link-soem/releases/download/v{version}/autd3-link-soem-v{version}-win-x64-shared.zip"
-            case "aarch64":
-                url = (
-                    f"https://github.com/shinolab/autd3-capi-link-soem/releases/download/v{version}/autd3-link-soem-v{version}-win-aarch64-shared.zip"
-                )
-            case _:
-                err(f"Unsupported platform: {platform.machine()}")
-        urllib.request.urlretrieve(url, "tmp.zip")
-        shutil.unpack_archive("tmp.zip", ".")
-        pathlib.Path("tmp.zip").unlink(missing_ok=True)
-        for dll in pathlib.Path("bin").rglob("*.dll"):
-            shutil.copy(dll, "pyautd3_link_soem/bin")
-    elif config.is_macos():
-        url = f"https://github.com/shinolab/autd3-capi-link-soem/releases/download/v{version}/autd3-link-soem-v{version}-macos-aarch64-shared.tar.gz"
-        urllib.request.urlretrieve(url, "tmp.tar.gz")
-        with tarfile.open("tmp.tar.gz", "r:gz") as tar:
-            tar.extractall()
-        pathlib.Path("tmp.tar.gz").unlink(missing_ok=True)
-        for dll in pathlib.Path("bin").rglob("*.dylib"):
-            shutil.copy(dll, "pyautd3_link_soem/bin")
-    elif config.is_linux():
-        match config.arch:
-            case "x64":
-                url = f"https://github.com/shinolab/autd3-capi-link-soem/releases/download/v{version}/autd3-link-soem-v{version}-linux-x64-shared.tar.gz"
-            case "aarch64":
-                url = f"https://github.com/shinolab/autd3-capi-link-soem/releases/download/v{version}/autd3-link-soem-v{version}-linux-armv7-shared.tar.gz"
-            case "armv7l":
-                url = f"https://github.com/shinolab/autd3-capi-link-soem/releases/download/v{version}/autd3-link-soem-v{version}-linux-aarch64-shared.tar.gz"
-        urllib.request.urlretrieve(url, "tmp.tar.gz")
-        with tarfile.open("tmp.tar.gz", "r:gz") as tar:
-            tar.extractall()
-        pathlib.Path("tmp.tar.gz").unlink(missing_ok=True)
-        for dll in pathlib.Path("bin").rglob("*.so"):
-            shutil.copy(dll, "pyautd3_link_soem/bin")
-
+    config.download_and_extract("autd3-capi-link-soem", "autd3-link-soem", version, ["pyautd3_link_soem/bin"])
     shutil.copyfile("LICENSE", "pyautd3_link_soem/LICENSE.txt")
     shutil.copyfile("ThirdPartyNotice.txt", "pyautd3_link_soem/ThirdPartyNotice.txt")
-
     remove("bin")
-
-    with pathlib.Path("VERSION").open(mode="w") as f:
-        f.write(version)
+    pathlib.Path("VERSION").write_text(version)
 
 
 def py_build(args) -> None:  # noqa: ANN001
     config = Config(args)
-
     gen_pyi()
-
     copy_dll(config)
-
     build_wheel(config)
 
 
 def py_test(args) -> None:  # noqa: ANN001
     config = Config(args)
-
-    with working_dir("."):
-        gen_pyi()
-
-        run_command(["uv", "run", "mypy", "pyautd3_link_soem", "--check-untyped-defs"])
-        run_command(["uv", "run", "ruff", "check", "pyautd3_link_soem"])
-        run_command(["uv", "run", "mypy", "example", "--check-untyped-defs"])
-        run_command(["uv", "run", "ruff", "check", "example"])
-        run_command(["uv", "run", "mypy", "tests", "--check-untyped-defs"])
-        run_command(["uv", "run", "ruff", "check", "tests"])
-
-        copy_dll(config)
-
-        command = ["uv", "run", "pytest", "-n", "auto"]
-        run_command(command)
+    gen_pyi()
+    run_command(["uv", "run", "mypy", "pyautd3_link_soem", "--check-untyped-defs"])
+    run_command(["uv", "run", "ruff", "check", "pyautd3_link_soem"])
+    run_command(["uv", "run", "mypy", "example", "--check-untyped-defs"])
+    run_command(["uv", "run", "ruff", "check", "example"])
+    run_command(["uv", "run", "mypy", "tests", "--check-untyped-defs"])
+    run_command(["uv", "run", "ruff", "check", "tests"])
+    copy_dll(config)
+    run_command(["uv", "run", "pytest", "-n", "auto"])
 
 
 def py_cov(args) -> None:  # noqa: ANN001
     config = Config(args)
-
     copy_dll(config)
-
-    with working_dir("."):
-        gen_pyi()
-
-        command = ["uv", "run", "pytest", "-n", "auto"]
-        command.append("--cov-config=.coveragerc")
-        command.append("--cov=pyautd3_link_soem")
-        command.append("--cov-branch")
-        command.append(f"--cov-report={args.cov_report}")
-        run_command(command)
+    gen_pyi()
+    run_command(
+        [
+            "uv",
+            "run",
+            "pytest",
+            "-n",
+            "auto",
+            "--cov-config=.coveragerc",
+            "--cov=pyautd3_link_soem",
+            "--cov-branch",
+            f"--cov-report={args.cov_report}",
+        ],
+    )
 
 
 def py_clear(_) -> None:  # noqa: ANN001
     remove("setup.cfg")
     remove(".coverage")
-    remove("coverage.xml")
+    remove("LICENSE")
     remove("ThirdPartyNotice.txt")
     remove("VERSION")
     remove("dist")
-    remove("build")
-    remove("pyautd3_link_soem.egg-info")
-    remove("pyautd3_link_soem/bin")
-    remove(".mypy_cache")
+    remove("pyautd3.egg-info")
+    remove("pyautd3/bin")
+    remove("pyautd3/LICENSE.txt")
+    remove("pyautd3/ThirdPartyNotice.txt")
     remove("htmlcov")
+    remove(".ruff_cache")
+    remove(".mypy_cache")
+    remove(".pytest_cache")
     rremove("./**/__pycache__/**/")
+    rremove("uv.lock")
 
 
 def util_update_ver(args) -> None:  # noqa: ANN001
@@ -255,22 +185,12 @@ def util_update_ver(args) -> None:  # noqa: ANN001
     else:
         pkg_version = version
 
-    with working_dir("."):
-        f = pathlib.Path("pyautd3_link_soem/__init__.py")
-        content = f.read_text()
-        content = re.sub(
-            r'__version__ = "(.*)"',
-            f'__version__ = "{version}"',
-            content,
-            flags=re.MULTILINE,
-        )
-        f.write_text(content)
-
-        f = pathlib.Path("pyproject.toml")
-        content = f.read_text()
-        content = re.sub(r"^version = (.*)", f'version = "{pkg_version}"', content, flags=re.MULTILINE)
-        content = re.sub(r'"pyautd3==(.*)"', f'"pyautd3=={pkg_version}"', content)
-        f.write_text(content)
+    substitute_in_file("pyautd3_link_soem/__init__.py", [(r'__version__ = "(.*)"', f'__version__ = "{version}"')])
+    substitute_in_file(
+        "pyproject.toml",
+        [(r'^version = "(.*)"', f'version = "{pkg_version}"'), (r'"pyautd3==(.*)"', f'"pyautd3=={pkg_version}"')],
+        flags=re.MULTILINE,
+    )
 
 
 def util_generate_wrapper(_) -> None:  # noqa: ANN001

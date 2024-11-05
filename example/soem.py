@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from pyautd3 import AUTD3, Controller, Focus, Hz, Sine
+from pyautd3 import AUTD3, Controller, Focus, Hz, Sine, tracing_init
 
 from pyautd3_link_soem import SOEM, Status
 
@@ -14,7 +14,6 @@ def err_handler(slave: int, status: Status) -> None:
 
 
 if __name__ == "__main__":
-    from pyautd3 import tracing_init
 
     os.environ["RUST_LOG"] = "autd3=INFO"
 
