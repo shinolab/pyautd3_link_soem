@@ -331,6 +331,7 @@ from pyautd3_link_soem.native_methods.autd3_link_soem import TimerStrategy, Proc
             "FociSTMPtr",
             "GainSTMPtr",
             "ControllerBuilderPtr",
+            "Duration",
         ];
         let holo_ty = vec!["ResultBackend", "BackendPtr", "EmissionConstraintWrap"];
         if used_ty

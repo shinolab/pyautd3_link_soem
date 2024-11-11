@@ -5,7 +5,7 @@ import os
 from pyautd3.native_methods.structs import Vector3, Quaternion, FfiFuture, LocalFfiFuture
 from pyautd3.native_methods.autd3_driver import SamplingConfig, LoopBehavior, SyncMode, GainSTMMode, GPIOOut, GPIOIn, Segment, SilencerTarget, Drive
 from pyautd3_link_soem.native_methods.autd3_link_soem import TimerStrategy, ProcessPriority
-from pyautd3.native_methods.autd3capi_driver import ResultStatus, ResultSyncLinkBuilder
+from pyautd3.native_methods.autd3capi_driver import Duration, ResultStatus, ResultSyncLinkBuilder
 
 from enum import IntEnum
 
@@ -64,10 +64,10 @@ class NativeMethods(metaclass=Singleton):
         self.dll.AUTDLinkSOEMTracingInitWithFile.argtypes = [ctypes.c_char_p] 
         self.dll.AUTDLinkSOEMTracingInitWithFile.restype = ResultStatus
 
-        self.dll.AUTDLinkSOEM.argtypes = [ctypes.c_char_p, ctypes.c_uint32, ctypes.c_uint64, ctypes.c_uint64, ctypes.c_void_p, ctypes.c_void_p, SyncMode, ProcessPriority, ThreadPriorityPtr, ctypes.c_uint64, TimerStrategy, ctypes.c_uint64, ctypes.c_uint64]  # type: ignore 
+        self.dll.AUTDLinkSOEM.argtypes = [ctypes.c_char_p, ctypes.c_uint32, Duration, Duration, ctypes.c_void_p, ctypes.c_void_p, SyncMode, ProcessPriority, ThreadPriorityPtr, Duration, TimerStrategy, Duration, Duration]  # type: ignore 
         self.dll.AUTDLinkSOEM.restype = ResultSyncLinkBuilder
 
-        self.dll.AUTDLinkSOEMIsDefault.argtypes = [ctypes.c_uint32, ctypes.c_uint64, ctypes.c_uint64, SyncMode, ProcessPriority, ThreadPriorityPtr, ctypes.c_uint64, TimerStrategy, ctypes.c_uint64, ctypes.c_uint64]  # type: ignore 
+        self.dll.AUTDLinkSOEMIsDefault.argtypes = [ctypes.c_uint32, Duration, Duration, SyncMode, ProcessPriority, ThreadPriorityPtr, Duration, TimerStrategy, Duration, Duration]  # type: ignore 
         self.dll.AUTDLinkSOEMIsDefault.restype = ctypes.c_bool
 
         self.dll.AUTDLinkSOEMStatusGetMsg.argtypes = [Status, ctypes.c_char_p]  # type: ignore 
@@ -103,11 +103,11 @@ class NativeMethods(metaclass=Singleton):
     def link_soem_tracing_init_with_file(self, path: bytes) -> ResultStatus:
         return self.dll.AUTDLinkSOEMTracingInitWithFile(path)
 
-    def link_soem(self, ifname: bytes, buf_size: int, send_cycle_ns: int, sync0_cycle_ns: int, err_handler: ctypes.c_void_p | None, err_context: ctypes.c_void_p | None, mode: SyncMode, process_priority: ProcessPriority, thread_priority: ThreadPriorityPtr, state_check_interval_ns: int, timer_strategy: TimerStrategy, tolerance_ns: int, sync_timeout_ns: int) -> ResultSyncLinkBuilder:
-        return self.dll.AUTDLinkSOEM(ifname, buf_size, send_cycle_ns, sync0_cycle_ns, err_handler, err_context, mode, process_priority, thread_priority, state_check_interval_ns, timer_strategy, tolerance_ns, sync_timeout_ns)
+    def link_soem(self, ifname: bytes, buf_size: int, send_cycle: Duration, sync0_cycle: Duration, err_handler: ctypes.c_void_p | None, err_context: ctypes.c_void_p | None, mode: SyncMode, process_priority: ProcessPriority, thread_priority: ThreadPriorityPtr, state_check_interval: Duration, timer_strategy: TimerStrategy, tolerance: Duration, sync_timeout: Duration) -> ResultSyncLinkBuilder:
+        return self.dll.AUTDLinkSOEM(ifname, buf_size, send_cycle, sync0_cycle, err_handler, err_context, mode, process_priority, thread_priority, state_check_interval, timer_strategy, tolerance, sync_timeout)
 
-    def link_soem_is_default(self, buf_size: int, send_cycle_ns: int, sync0_cycle_ns: int, mode: SyncMode, process_priority: ProcessPriority, thread_priority: ThreadPriorityPtr, state_check_interval_ns: int, timer_strategy: TimerStrategy, tolerance_ns: int, sync_timeout_ns: int) -> ctypes.c_bool:
-        return self.dll.AUTDLinkSOEMIsDefault(buf_size, send_cycle_ns, sync0_cycle_ns, mode, process_priority, thread_priority, state_check_interval_ns, timer_strategy, tolerance_ns, sync_timeout_ns)
+    def link_soem_is_default(self, buf_size: int, send_cycle: Duration, sync0_cycle: Duration, mode: SyncMode, process_priority: ProcessPriority, thread_priority: ThreadPriorityPtr, state_check_interval: Duration, timer_strategy: TimerStrategy, tolerance: Duration, sync_timeout: Duration) -> ctypes.c_bool:
+        return self.dll.AUTDLinkSOEMIsDefault(buf_size, send_cycle, sync0_cycle, mode, process_priority, thread_priority, state_check_interval, timer_strategy, tolerance, sync_timeout)
 
     def link_soem_status_get_msg(self, src: Status, dst: ctypes.Array[ctypes.c_char] | None) -> ctypes.c_uint32:
         return self.dll.AUTDLinkSOEMStatusGetMsg(src, dst)

@@ -1,7 +1,6 @@
-from datetime import timedelta
-
 import pytest
 from pyautd3 import tracing_init
+from pyautd3.utils import Duration
 
 from pyautd3_link_soem import SOEM, ProcessPriority, RemoteSOEM, Status, SyncMode, ThreadPriority, TimerStrategy
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as NativeSOEM
@@ -59,15 +58,15 @@ def test_soem_is_default():
     builder = SOEM.builder()
     assert NativeSOEM().link_soem_is_default(
         builder.buf_size,
-        int(builder.send_cycle.total_seconds() * 1000 * 1000 * 1000),
-        int(builder.sync0_cycle.total_seconds() * 1000 * 1000 * 1000),
+        builder.send_cycle._inner,
+        builder.sync0_cycle._inner,
         builder.sync_mode,
         builder.process_priority,
         builder.thread_priority,
-        int(builder.state_check_interval.total_seconds() * 1000 * 1000 * 1000),
+        builder.state_check_interval._inner,
         builder.timer_strategy,
-        int(builder.sync_tolerance.total_seconds() * 1000 * 1000 * 1000),
-        int(builder.sync_timeout.total_seconds() * 1000 * 1000 * 1000),
+        builder.sync_tolerance._inner,
+        builder.sync_timeout._inner,
     )
 
 
@@ -79,27 +78,27 @@ def test_soem():
         SOEM.builder()
         .with_ifname("ifname")
         .with_buf_size(10)
-        .with_send_cycle(timedelta(milliseconds=10))
-        .with_sync0_cycle(timedelta(milliseconds=20))
+        .with_send_cycle(Duration.from_millis(10))
+        .with_sync0_cycle(Duration.from_millis(20))
         .with_err_handler(err_handler)  # type: ignore[arg-type]
         .with_timer_strategy(TimerStrategy.StdSleep)
         .with_sync_mode(SyncMode.FreeRun)
-        .with_sync_tolerance(timedelta(microseconds=10))
-        .with_sync_timeout(timedelta(seconds=20))
-        .with_state_check_interval(timedelta(milliseconds=200))
+        .with_sync_tolerance(Duration.from_micros(10))
+        .with_sync_timeout(Duration.from_secs(20))
+        .with_state_check_interval(Duration.from_millis(200))
         .with_process_priority(ProcessPriority.Idle)
         .with_thread_priority(ThreadPriority.Min)
     )
     assert builder.ifname == "ifname"
     assert builder.buf_size == 10
-    assert builder.send_cycle == timedelta(milliseconds=10)
-    assert builder.sync0_cycle == timedelta(milliseconds=20)
+    assert builder.send_cycle == Duration.from_millis(10)
+    assert builder.sync0_cycle == Duration.from_millis(20)
     assert builder.err_handler == err_handler
     assert builder.timer_strategy == TimerStrategy.StdSleep
     assert builder.sync_mode == SyncMode.FreeRun
-    assert builder.sync_tolerance == timedelta(microseconds=10)
-    assert builder.sync_timeout == timedelta(seconds=20)
-    assert builder.state_check_interval == timedelta(milliseconds=200)
+    assert builder.sync_tolerance == Duration.from_micros(10)
+    assert builder.sync_timeout == Duration.from_secs(20)
+    assert builder.state_check_interval == Duration.from_millis(200)
     assert builder.process_priority == ProcessPriority.Idle
     assert builder.thread_priority == ThreadPriority.Min
 
