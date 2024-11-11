@@ -1,6 +1,5 @@
 import ctypes
 from collections.abc import Callable
-from datetime import timedelta
 from typing import Self
 
 from pyautd3.derive import builder
@@ -9,6 +8,7 @@ from pyautd3.native_methods.autd3capi import ControllerPtr
 from pyautd3.native_methods.autd3capi import NativeMethods as Base
 from pyautd3.native_methods.autd3capi_driver import HandlePtr, LinkBuilderPtr, LinkPtr, SyncMode
 from pyautd3.native_methods.utils import _to_null_terminated_utf8, _validate_ptr
+from pyautd3.utils import Duration
 
 from pyautd3_link_soem.adapter import EtherCATAdapter
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as LinkSOEM
@@ -24,28 +24,28 @@ ErrHandlerFunc = ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_uint32, ctypes
 class _SOEMBuilder(LinkBuilder["SOEM"]):
     _param_ifname: str
     _param_buf_size: int
-    _param_send_cycle: timedelta
-    _param_sync0_cycle: timedelta
+    _param_send_cycle: Duration
+    _param_sync0_cycle: Duration
     _param_err_handler: Callable[[int, Status], None] | None
     _param_timer_strategy: TimerStrategy
     _param_sync_mode: SyncMode
-    _param_sync_tolerance: timedelta
-    _param_sync_timeout: timedelta
-    _param_state_check_interval: timedelta
+    _param_sync_tolerance: Duration
+    _param_sync_timeout: Duration
+    _param_state_check_interval: Duration
     _param_process_priority: ProcessPriority
     _param_thread_priority: ThreadPriorityPtr
 
     def __init__(self: Self) -> None:
         self._param_ifname = ""
         self._param_buf_size = 32
-        self._param_send_cycle = timedelta(milliseconds=1)
-        self._param_sync0_cycle = timedelta(milliseconds=1)
+        self._param_send_cycle = Duration.from_millis(1)
+        self._param_sync0_cycle = Duration.from_millis(1)
         self._param_err_handler = None
         self._param_timer_strategy = TimerStrategy.SpinSleep
         self._param_sync_mode = SyncMode.DC
-        self._param_sync_tolerance = timedelta(microseconds=1)
-        self._param_sync_timeout = timedelta(seconds=10)
-        self._param_state_check_interval = timedelta(milliseconds=100)
+        self._param_sync_tolerance = Duration.from_micros(1)
+        self._param_sync_timeout = Duration.from_secs(10)
+        self._param_state_check_interval = Duration.from_millis(100)
         self._param_process_priority = ProcessPriority.High
         self._param_thread_priority = ThreadPriority.Max
 
