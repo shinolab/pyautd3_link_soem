@@ -238,7 +238,7 @@ wheels = [
 
 [[package]]
 name = "pyautd3-link-soem"
-version = "29.0.0rc9"
+version = "29.0.0rc9.post2"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },

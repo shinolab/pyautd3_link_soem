@@ -62,17 +62,17 @@ class _SOEMBuilder(LinkBuilder["SOEM"]):
             LinkSOEM().link_soem(
                 _to_null_terminated_utf8(self._param_ifname),
                 self._param_buf_size,
-                self._param_send_cycle.as_nanos(),
-                self._param_sync0_cycle.as_nanos(),
+                self._param_send_cycle._inner,
+                self._param_sync0_cycle._inner,
                 None if self._param_err_handler is None else self._err_handler,  # type: ignore[arg-type]
                 None,
                 self._param_sync_mode,
                 self._param_process_priority,
                 self._param_thread_priority,
-                self._param_state_check_interval.as_nanos(),
+                self._param_state_check_interval._inner,
                 self._param_timer_strategy,
-                self._param_sync_tolerance.as_nanos(),
-                self._param_sync_timeout.as_nanos(),
+                self._param_sync_tolerance._inner,
+                self._param_sync_timeout._inner,
             ),
         )
 
