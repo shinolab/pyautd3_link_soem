@@ -12,7 +12,16 @@ from .thread_priority import ThreadPriority
 pyautd3._ext_tracing_init.append(lambda: Soem().link_soem_tracing_init())
 
 
-__all__ = ["SOEM", "RemoteSOEM", "Status", "ThreadPriority", "EtherCATAdapter", "ProcessPriority", "SyncMode", "TimerStrategy"]
+__all__ = [
+    "SOEM",
+    "EtherCATAdapter",
+    "ProcessPriority",
+    "RemoteSOEM",
+    "Status",
+    "SyncMode",
+    "ThreadPriority",
+    "TimerStrategy",
+]
 
 
-__version__ = "29.0.0rc9"
+__version__ = "29.0.0rc9.post1"

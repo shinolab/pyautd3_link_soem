@@ -4,11 +4,8 @@
 import argparse
 import ast
 import pathlib
-import platform
 import re
 import shutil
-import tarfile
-import urllib.request
 
 from tools.autd3_build_utils.autd3_build_utils import BaseConfig, err, fetch_submodule, remove, rremove, run_command, substitute_in_file, working_dir
 from tools.autd3_build_utils.pyi_generator import PyiGenerator
