@@ -269,14 +269,15 @@ impl PythonGenerator {
 import threading
 import ctypes
 import os
-from pyautd3.native_methods.structs import Vector3, Quaternion, FfiFuture, LocalFfiFuture"
+from pyautd3.native_methods.structs import Vector3, Quaternion"
         )?;
 
         if capi {
             writeln!(
                 w,
-                r"from pyautd3.native_methods.autd3_driver import SamplingConfig, LoopBehavior, SyncMode, GainSTMMode, GPIOOut, GPIOIn, Segment, SilencerTarget, Drive
-from pyautd3_link_soem.native_methods.autd3_link_soem import TimerStrategy, ProcessPriority"
+                r"from pyautd3.native_methods.autd3_core import SamplingConfig, LoopBehavior, GPIOOut, GPIOIn, Segment, Drive
+from pyautd3.native_methods.autd3_driver import GainSTMMode, SilencerTarget
+from pyautd3_link_soem.native_methods.autd3_link_soem import SyncMode, TimerStrategy, ProcessPriority"
             )?;
         }
 
