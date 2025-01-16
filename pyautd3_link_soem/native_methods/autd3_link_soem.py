@@ -2,7 +2,7 @@
 import threading
 import ctypes
 import os
-from pyautd3.native_methods.structs import Vector3, Quaternion, FfiFuture, LocalFfiFuture
+from pyautd3.native_methods.structs import Vector3, Quaternion
 from enum import IntEnum
 
 
@@ -23,6 +23,15 @@ class ProcessPriority(IntEnum):
     AboveNormal = 3
     High = 4
     Realtime = 5
+
+    @classmethod
+    def from_param(cls, obj):
+        return int(obj)  # pragma: no cover
+
+
+class SyncMode(IntEnum):
+    DC = 0
+    FreeRun = 1
 
     @classmethod
     def from_param(cls, obj):

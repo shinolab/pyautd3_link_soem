@@ -6,13 +6,13 @@ from pyautd3.derive import builder
 from pyautd3.driver.link import Link, LinkBuilder
 from pyautd3.native_methods.autd3capi import ControllerPtr
 from pyautd3.native_methods.autd3capi import NativeMethods as Base
-from pyautd3.native_methods.autd3capi_driver import HandlePtr, LinkBuilderPtr, LinkPtr, SyncMode
+from pyautd3.native_methods.autd3capi_driver import LinkBuilderPtr, LinkPtr
 from pyautd3.native_methods.utils import _to_null_terminated_utf8, _validate_ptr
 from pyautd3.utils import Duration
 
 from pyautd3_link_soem.adapter import EtherCATAdapter
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as LinkSOEM
-from pyautd3_link_soem.native_methods.autd3capi_link_soem import ProcessPriority, ThreadPriorityPtr, TimerStrategy
+from pyautd3_link_soem.native_methods.autd3capi_link_soem import ProcessPriority, SyncMode, ThreadPriorityPtr, TimerStrategy
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as _Status
 from pyautd3_link_soem.status import Status
 from pyautd3_link_soem.thread_priority import ThreadPriority
@@ -76,8 +76,8 @@ class _SOEMBuilder(LinkBuilder["SOEM"]):
             ),
         )
 
-    def _resolve_link(self: Self, handle: HandlePtr, ptr: ControllerPtr) -> "SOEM":
-        return SOEM(handle, Base().link_get(ptr), self._err_handler)  # pragma: no cover
+    def _resolve_link(self: Self, ptr: ControllerPtr) -> "SOEM":
+        return SOEM(Base().link_get(ptr), self._err_handler)  # pragma: no cover
 
 
 class SOEM(Link):
@@ -98,8 +98,8 @@ class SOEM(Link):
 
         return res
 
-    def __init__(self: Self, handle: HandlePtr, ptr: LinkPtr, err_handler) -> None:  # noqa: ANN001
-        super().__init__(handle, ptr)  # pragma: no cover
+    def __init__(self: Self, ptr: LinkPtr, err_handler) -> None:  # noqa: ANN001
+        super().__init__(ptr)  # pragma: no cover
         self._err_handler = err_handler  # pragma: no cover
 
     @staticmethod
