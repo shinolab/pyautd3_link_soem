@@ -39,12 +39,12 @@ def download_and_extract(repo: str, name: str, version: str) -> None:
 
 def should_update_dll(version: str) -> bool:
     if platform.system() == "Windows":
-        if not Path("pyautd3_link_soem/bin/autd3capi.dll").exists():
+        if not Path("pyautd3_link_soem/bin/autd3capi_link_soem.dll").exists():
             return True
     elif platform.system() == "Darwin":
-        if not Path("pyautd3_link_soem/bin/libautd3capi.dylib").exists():
+        if not Path("pyautd3_link_soem/bin/libautd3capi_link_soem.dylib").exists():
             return True
-    elif not Path("pyautd3_link_soem/bin/libautd3capi.so").exists():
+    elif not Path("pyautd3_link_soem/bin/libautd3capi_link_soem.so").exists():
         return True
 
     version_file = Path("VERSION")
