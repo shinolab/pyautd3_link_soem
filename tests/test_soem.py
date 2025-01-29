@@ -1,10 +1,10 @@
 import pytest
 from pyautd3 import tracing_init
-from pyautd3.utils import Duration
 
-from pyautd3_link_soem import SOEM, ProcessPriority, RemoteSOEM, Status, SyncMode, ThreadPriority, TimerStrategy
+from pyautd3_link_soem import SOEM, RemoteSOEM, Status, ThreadPriority
+from pyautd3_link_soem.local import SOEMOption
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as NativeSOEM
-from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as _Status
+from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as Status_
 
 
 def test_tracing_init():
@@ -38,15 +38,15 @@ def test_status():
     assert err == Status.Error()
     assert lost != state_change
     assert lost != err
-    assert lost != _Status.Lost
+    assert lost != Status_.Lost
     assert state_change != err
     assert state_change != lost
-    assert state_change != _Status.StateChanged
+    assert state_change != Status_.StateChanged
     assert err != lost
     assert err != state_change
-    assert err != _Status.Error
+    assert err != Status_.Error
 
-    status = Status.__private_new__(_Status.Lost, "lost")
+    status = Status.__private_new__(Status_.Lost, "lost")
     assert status == Status.Lost()
     assert str(status) == "lost"
 
@@ -55,53 +55,15 @@ def test_status():
 
 
 def test_soem_is_default():
-    builder = SOEM.builder()
-    assert NativeSOEM().link_soem_is_default(
-        builder.buf_size,
-        builder.send_cycle._inner,
-        builder.sync0_cycle._inner,
-        builder.sync_mode,
-        builder.process_priority,
-        builder.thread_priority,
-        builder.state_check_interval._inner,
-        builder.timer_strategy,
-        builder.sync_tolerance._inner,
-        builder.sync_timeout._inner,
-    )
+    assert NativeSOEM().link_soem_is_default(SOEMOption()._inner())
 
 
 def test_soem():
     def err_handler(slave: int, status: Status) -> None:
         print(f"slave: {slave}, status: {status}")
 
-    builder = (
-        SOEM.builder()
-        .with_ifname("ifname")
-        .with_buf_size(10)
-        .with_send_cycle(Duration.from_millis(10))
-        .with_sync0_cycle(Duration.from_millis(20))
-        .with_err_handler(err_handler)  # type: ignore[arg-type]
-        .with_timer_strategy(TimerStrategy.StdSleep)
-        .with_sync_mode(SyncMode.FreeRun)
-        .with_sync_tolerance(Duration.from_micros(10))
-        .with_sync_timeout(Duration.from_secs(20))
-        .with_state_check_interval(Duration.from_millis(200))
-        .with_process_priority(ProcessPriority.Idle)
-        .with_thread_priority(ThreadPriority.Min)
-    )
-    assert builder.ifname == "ifname"
-    assert builder.buf_size == 10
-    assert builder.send_cycle == Duration.from_millis(10)
-    assert builder.sync0_cycle == Duration.from_millis(20)
-    assert builder.err_handler == err_handler
-    assert builder.timer_strategy == TimerStrategy.StdSleep
-    assert builder.sync_mode == SyncMode.FreeRun
-    assert builder.sync_tolerance == Duration.from_micros(10)
-    assert builder.sync_timeout == Duration.from_secs(20)
-    assert builder.state_check_interval == Duration.from_millis(200)
-    assert builder.process_priority == ProcessPriority.Idle
-    assert builder.thread_priority == ThreadPriority.Min
+    _ = SOEM(err_handler, SOEMOption())
 
 
 def test_remote_soem():
-    _ = RemoteSOEM.builder("127.0.0.1:8080")
+    _ = RemoteSOEM("127.0.0.1:8080")

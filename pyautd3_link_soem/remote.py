@@ -1,31 +1,18 @@
 from typing import Self
 
-from pyautd3.driver.link import Link, LinkBuilder
-from pyautd3.native_methods.autd3capi import ControllerPtr
-from pyautd3.native_methods.autd3capi import NativeMethods as Base
-from pyautd3.native_methods.autd3capi_driver import LinkBuilderPtr, LinkPtr
+from pyautd3.driver.link import Link
+from pyautd3.native_methods.autd3capi_driver import LinkPtr
 from pyautd3.native_methods.utils import _to_null_terminated_utf8, _validate_ptr
 
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as LinkSOEM
 
 
-class _RemoteSOEMBuilder(LinkBuilder["RemoteSOEM"]):
+class RemoteSOEM(Link):
     addr: str
 
     def __init__(self: Self, addr: str) -> None:
+        super().__init__()
         self.addr = addr
 
-    def _link_builder_ptr(self: Self) -> LinkBuilderPtr:
+    def _resolve(self: Self) -> LinkPtr:
         return _validate_ptr(LinkSOEM().link_remote_soem(_to_null_terminated_utf8(self.addr)))  # pragma: no cover
-
-    def _resolve_link(self: Self, ptr: ControllerPtr) -> "RemoteSOEM":
-        return RemoteSOEM(Base().link_get(ptr))  # pragma: no cover
-
-
-class RemoteSOEM(Link):
-    def __init__(self: Self, ptr: LinkPtr) -> None:
-        super().__init__(ptr)  # pragma: no cover
-
-    @staticmethod
-    def builder(addr: str) -> _RemoteSOEMBuilder:
-        return _RemoteSOEMBuilder(addr)
