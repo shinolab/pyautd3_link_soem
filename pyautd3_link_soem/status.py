@@ -2,15 +2,15 @@ from typing import Self
 
 from pyautd3.native_methods.utils import ConstantADT
 
-from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as _Status
+from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as Status_
 
 
 class Status(metaclass=ConstantADT):
-    _inner: _Status
+    _inner: Status_
     _msg: str
 
     @classmethod
-    def __private_new__(cls: type["Status"], inner: _Status, msg: str) -> "Status":
+    def __private_new__(cls: type["Status"], inner: Status_, msg: str) -> "Status":
         ins = super().__new__(cls)
         ins._inner = inner
         ins._msg = msg
@@ -29,12 +29,12 @@ class Status(metaclass=ConstantADT):
 
     @staticmethod
     def Lost() -> "Status":  # noqa: N802
-        return Status.__private_new__(_Status.Lost, "")
+        return Status.__private_new__(Status_.Lost, "")
 
     @staticmethod
     def StateChanged() -> "Status":  # noqa: N802
-        return Status.__private_new__(_Status.StateChanged, "")
+        return Status.__private_new__(Status_.StateChanged, "")
 
     @staticmethod
     def Error() -> "Status":  # noqa: N802
-        return Status.__private_new__(_Status.Error, "")
+        return Status.__private_new__(Status_.Error, "")

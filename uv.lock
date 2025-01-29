@@ -87,12 +87,6 @@ wheels = [
 ]
 
 [[package]]
-name = "forbiddenfruit"
-version = "0.1.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e6/79/d4f20e91327c98096d605646bdc6a5ffedae820f38d378d3515c42ec5e60/forbiddenfruit-0.1.4.tar.gz", hash = "sha256:e3f7e66561a29ae129aac139a85d610dbf3dd896128187ed5454b6421f624253", size = 43756 }
-
-[[package]]
 name = "iniconfig"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -219,26 +213,22 @@ wheels = [
 
 [[package]]
 name = "pyautd3"
-version = "29.0.0rc16"
+version = "29.0.0rc18"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "forbiddenfruit" },
     { name = "numpy" },
     { name = "polars" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bf/f9/32d7bce76205e7d3eeca93c2c5793281b22e35246b83c64cb84dbaba2cc4/pyautd3-29.0.0rc16.tar.gz", hash = "sha256:2d46a65bc7d97ae86d0a357d4917d528fd91bf90a6393807f306d8212ea3f00b", size = 6894311 }
+sdist = { url = "https://files.pythonhosted.org/packages/7f/5f/f109fc5517ebabf0391f1e8cee0a3fd26db23277d0230578d4d0b3b632f3/pyautd3-29.0.0rc18.tar.gz", hash = "sha256:6e95528a7669927e979f9d4cc337ed61a6ae989600bf0a5837c727849f5b52d8", size = 4296594 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/94/b5/74181731c429f271f66a66050b3f6780e7a9b84cd34fbf3f49d0f8ad7d6e/pyautd3-29.0.0rc16-py3-none-linux_armv7l.whl", hash = "sha256:b810bdfa2aa8f82c1ff54ada1e393f1f51b180b1acd99c63f6255418df81a2ab", size = 8107011 },
-    { url = "https://files.pythonhosted.org/packages/b6/55/fc51c409b288e4c133269dd3fb9ca797e4b591be384b8a62a59ebcc5f12a/pyautd3-29.0.0rc16-py3-none-macosx_11_0_arm64.whl", hash = "sha256:c0d6af161ccfaf1bf06b26723e42c71cc3dc7461fa6e2d86300bdcc02a6ccfb9", size = 6984826 },
-    { url = "https://files.pythonhosted.org/packages/14/f2/688dff04b0d6651cea7601f694430cc03737c6e9066bb1f6aae8abe22b7b/pyautd3-29.0.0rc16-py3-none-manylinux1_x86_64.whl", hash = "sha256:d41845789919a26f9aea209499b57019ae81370db65236f9bf52735a8d1b8b2d", size = 8418563 },
-    { url = "https://files.pythonhosted.org/packages/ed/96/737a8584586212ec54b25875f4ed8d0c609888c69b1bdfa10eaa5786e464/pyautd3-29.0.0rc16-py3-none-manylinux2014_aarch64.whl", hash = "sha256:07579de1519229a39da8612a7407a78070766949c8db17b07f5657bbbe1eb078", size = 7903008 },
-    { url = "https://files.pythonhosted.org/packages/d3/44/22db0ad4da7b5d7eff2caf22fa42aed0b17c62f4333f4d4bbe8e919921d4/pyautd3-29.0.0rc16-py3-none-win_amd64.whl", hash = "sha256:b03664413fb2407908f7be64550c78601705900175b9b44dbf8e15182dfcf451", size = 7289501 },
-    { url = "https://files.pythonhosted.org/packages/f8/cd/a86a9c6c70ea82068fad1c9155051dd6083f0ae8d1f9da7ce586112c11f0/pyautd3-29.0.0rc16-py3-none-win_arm64.whl", hash = "sha256:f2deeff4f73b2f30e8dc10eb574b9d9c1a3c76ef5a710aa1ef75d6827d01744c", size = 7006883 },
+    { url = "https://files.pythonhosted.org/packages/69/8d/f2b087faaa94a7904fcaad74b704c022603b5aaa5cc608b6df3f3c1f2046/pyautd3-29.0.0rc18-py3-none-macosx_11_0_arm64.whl", hash = "sha256:444c71f9428108b83a0681016af0d00bcb56b115e730ec02e69d2c3b18132828", size = 4346651 },
+    { url = "https://files.pythonhosted.org/packages/ed/b7/7928be260ebbf8eb9e156a05c5266bee4581e6524a26f4b0423d44f5817a/pyautd3-29.0.0rc18-py3-none-manylinux1_x86_64.whl", hash = "sha256:01e24dfcbb0429b60594eb64ababe369c8861c90952288456e9c6c64207b4504", size = 4950075 },
+    { url = "https://files.pythonhosted.org/packages/20/39/9ccc84eebed06ce4e1afb5b3ed8ffef781910fd7235fa45522e270c370dc/pyautd3-29.0.0rc18-py3-none-win_amd64.whl", hash = "sha256:84c195192183088ddf4d1332116640be0ed1afe5143ab28e81c6e91151760737", size = 4290191 },
 ]
 
 [[package]]
 name = "pyautd3-link-soem"
-version = "29.0.0rc16"
+version = "29.0.0rc18"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
@@ -260,7 +250,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "numpy", specifier = ">=2" },
-    { name = "pyautd3", specifier = "==29.0.0rc16" },
+    { name = "pyautd3", specifier = "==29.0.0rc18" },
 ]
 
 [package.metadata.requires-dev]

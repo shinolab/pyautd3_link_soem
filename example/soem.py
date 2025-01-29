@@ -1,9 +1,9 @@
 import os
 
 import numpy as np
-from pyautd3 import AUTD3, Controller, Focus, Hz, Sine, tracing_init
+from pyautd3 import AUTD3, Controller, Focus, FocusOption, Hz, Sine, SineOption, tracing_init
 
-from pyautd3_link_soem import SOEM, Status
+from pyautd3_link_soem import SOEM, SOEMOption, Status
 
 
 def err_handler(slave: int, status: Status) -> None:
@@ -14,15 +14,17 @@ def err_handler(slave: int, status: Status) -> None:
 
 
 if __name__ == "__main__":
-
     os.environ["RUST_LOG"] = "autd3=INFO"
 
     tracing_init()
 
-    with Controller.builder([AUTD3([0.0, 0.0, 0.0])]).open(
-        SOEM.builder().with_err_handler(err_handler),  # type: ignore[arg-type]
-    ) as autd:
-        autd.send((Sine(150.0 * Hz), Focus(autd.center + np.array([0.0, 0.0, 150.0]))))
+    with Controller.open([AUTD3(pos=[0.0, 0.0, 0.0], rot=[1.0, 0.0, 0.0, 0.0])], SOEM(err_handler, SOEMOption())) as autd:
+        autd.send(
+            (
+                Sine(freq=150.0 * Hz, option=SineOption()),
+                Focus(pos=autd.center + np.array([0.0, 0.0, 150.0]), option=FocusOption()),
+            ),
+        )
 
         _ = input("Press Enter to exit")
 

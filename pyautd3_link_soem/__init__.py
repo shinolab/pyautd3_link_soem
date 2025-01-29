@@ -1,10 +1,10 @@
 import pyautd3
 
+from pyautd3_link_soem.native_methods.autd3_link_soem import ProcessPriority, SyncMode, TimerStrategy
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as Soem
-from pyautd3_link_soem.native_methods.autd3capi_link_soem import ProcessPriority, SyncMode, TimerStrategy
 
 from .adapter import EtherCATAdapter
-from .local import SOEM
+from .local import SOEM, SOEMOption
 from .remote import RemoteSOEM
 from .status import Status
 from .thread_priority import ThreadPriority
@@ -17,6 +17,7 @@ __all__ = [
     "EtherCATAdapter",
     "ProcessPriority",
     "RemoteSOEM",
+    "SOEMOption",
     "Status",
     "SyncMode",
     "ThreadPriority",
@@ -24,4 +25,4 @@ __all__ = [
 ]
 
 
-__version__ = "29.0.0rc16"
+__version__ = "29.0.0rc18"

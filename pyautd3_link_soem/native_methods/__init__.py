@@ -1,6 +1,5 @@
-import os
-import os.path
 import platform
+from pathlib import Path
 
 from .autd3capi_link_soem import NativeMethods as LinkSOEM
 
@@ -16,8 +15,9 @@ elif _PLATFORM == "Linux":
     _PREFIX = "lib"
     _BIN_EXT = ".so"
 else:
-    raise ImportError("Not supported OS")
+    err = "Not supported OS"
+    raise ImportError(err)
 
-_LIB_PATH = os.path.join(os.path.dirname(__file__), "..", "bin")
+_LIB_PATH = Path(__file__).parent.parent / "bin"
 
 LinkSOEM().init_dll(_LIB_PATH, _PREFIX, _BIN_EXT)
