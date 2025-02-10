@@ -7,18 +7,18 @@ from pyautd3.native_methods.autd3capi_driver import Duration, ResultLink, Result
 from pyautd3_link_soem.native_methods.autd3_link_soem import Status
 
 
-class EthernetAdaptersPtr(ctypes.Structure):
-    _fields_ = [("value", ctypes.c_void_p)]
-
-    def __eq__(self, other: object) -> bool:
-        return isinstance(other, EthernetAdaptersPtr) and self._fields_ == other._fields_  # pragma: no cover
-
-
 class ThreadPriorityPtr(ctypes.Structure):
     _fields_ = [("value", ctypes.c_void_p)]
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, ThreadPriorityPtr) and self._fields_ == other._fields_  # pragma: no cover
+
+
+class EthernetAdaptersPtr(ctypes.Structure):
+    _fields_ = [("value", ctypes.c_void_p)]
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, EthernetAdaptersPtr) and self._fields_ == other._fields_  # pragma: no cover
 
 
 class SOEMOption(ctypes.Structure):
