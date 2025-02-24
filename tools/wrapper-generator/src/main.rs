@@ -16,12 +16,9 @@ use parser::{Const, Enum, Function, Struct, Union};
 use python::{escape_python_builtin, sort_structs, to_python_func_name, CtypesType, PythonType};
 use utils::{is_ffi_safe_item, is_public_item};
 
-struct PythonWrapperGenerator<F: Fn(&str) -> bool> {
-    ignore_items: Vec<&'static str>,
-    filter: F,
-}
+struct PythonWrapperGenerator {}
 
-impl<F: Fn(&str) -> bool> PythonWrapperGenerator<F> {
+impl PythonWrapperGenerator {
     #[allow(clippy::type_complexity)]
     fn parse(
         &self,
@@ -40,7 +37,12 @@ impl<F: Fn(&str) -> bool> PythonWrapperGenerator<F> {
         let mut consts = vec![];
 
         for src in glob::glob(&format!("{}/**/*.rs", root.as_ref().join("src").display()))? {
-            let mut file = std::fs::File::open(src?)?;
+            let src = src?;
+            if src.to_str().is_some_and(|f| f.contains("soem_bindings")) {
+                continue;
+            }
+
+            let mut file = std::fs::File::open(src)?;
             let mut contents = String::new();
             file.read_to_string(&mut contents)?;
 
@@ -61,33 +63,18 @@ impl<F: Fn(&str) -> bool> PythonWrapperGenerator<F> {
                     return;
                 }
                 if let Some(s) = parser::parse_struct(&item) {
-                    if self.ignore_items.contains(&s.name.as_str()) || !(self.filter)(&s.name) {
-                        return;
-                    }
                     structs.push(s);
                 }
                 if let Some(e) = parser::parse_enum(&item) {
-                    if self.ignore_items.contains(&e.name.as_str()) || !(self.filter)(&e.name) {
-                        return;
-                    }
                     enums.push(e);
                 }
                 if let Some(u) = parser::parse_union(&item) {
-                    if self.ignore_items.contains(&u.name.as_str()) || !(self.filter)(&u.name) {
-                        return;
-                    }
                     unions.push(u);
                 }
                 if let Some(f) = parser::parse_function(&item) {
-                    if self.ignore_items.contains(&f.name.as_str()) || !(self.filter)(&f.name) {
-                        return;
-                    }
                     functions.push(f);
                 }
                 if let Some(c) = parser::parse_const(&item) {
-                    if self.ignore_items.contains(&c.name.as_str()) || !(self.filter)(&c.name) {
-                        return;
-                    }
                     consts.push(c);
                 }
             });
@@ -341,24 +328,11 @@ fn main() -> Result<()> {
     ];
     let mut defined_enum = vec![];
 
-    PythonWrapperGenerator {
-        ignore_items: vec!["_LIST_ENTRY", "pcap"],
-        filter: |name: &str| {
-            !name.starts_with("_RTL")
-                && !name.starts_with("ec_")
-                && !name.starts_with("ecx")
-                && !name.contains("pthread")
-        },
-    }
-    .gen(&home, &mut defined, &mut defined_enum)?;
+    PythonWrapperGenerator {}.gen(&home, &mut defined, &mut defined_enum)?;
 
     for entry in glob(&format!("{}/autd3-capi-link-soem/Cargo.toml", home))? {
         let entry = entry?;
-        PythonWrapperGenerator {
-            ignore_items: vec![],
-            filter: |_| true,
-        }
-        .gen_capi(&home, &entry, &mut defined, &mut defined_enum)?;
+        PythonWrapperGenerator {}.gen_capi(&home, &entry, &mut defined, &mut defined_enum)?;
     }
 
     Ok(())
