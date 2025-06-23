@@ -1,4 +1,5 @@
-import platform  # noqa: INP001
+import contextlib  # noqa: INP001
+import platform
 import re
 import shutil
 import tarfile
@@ -10,11 +11,11 @@ def download_and_extract(repo: str, name: str, version: str) -> None:
     url: str
     base_url = f"https://github.com/shinolab/{repo}/releases/download/v{version}/{name}-v{version}"
     if platform.system() == "Windows":
-        url = f"{base_url}-win-x64-shared.zip"
+        url = f"{base_url}-win-x64.zip"
     elif platform.system() == "Darwin":
-        url = f"{base_url}-macos-aarch64-shared.tar.gz"
+        url = f"{base_url}-macos-aarch64.tar.gz"
     else:
-        url = f"{base_url}-linux-x64-shared.tar.gz"
+        url = f"{base_url}-linux-x64.tar.gz"
 
     tmp_file = Path("tmp.zip" if url.endswith(".zip") else "tmp.tar.gz")
     urllib.request.urlretrieve(url, tmp_file)  # noqa: S310
@@ -35,6 +36,8 @@ def download_and_extract(repo: str, name: str, version: str) -> None:
     for so in Path("bin").glob("*.so"):
         shutil.copy(so, dst_dir)
     shutil.rmtree("bin")
+    with contextlib.suppress(FileNotFoundError):
+        shutil.rmtree("lib")
 
 
 def should_update_dll(version: str) -> bool:

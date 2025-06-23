@@ -325,6 +325,10 @@ fn main() -> Result<()> {
             "ResultLink".to_string(),
             "pyautd3.native_methods.autd3capi_driver".to_string(),
         ),
+        (
+            "SleeperWrap".to_string(),
+            "pyautd3.native_methods.autd3capi_driver".to_string(),
+        ),
     ];
     let mut defined_enum = vec![];
 

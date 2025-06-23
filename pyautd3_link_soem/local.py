@@ -2,13 +2,14 @@ import ctypes
 from collections.abc import Callable
 from typing import Self
 
+from pyautd3.controller import SpinSleeper, SpinWaitSleeper, StdSleeper
 from pyautd3.driver.link import Link
-from pyautd3.native_methods.autd3capi_driver import LinkPtr
+from pyautd3.native_methods.autd3capi_driver import LinkPtr, SleeperWrap
 from pyautd3.native_methods.utils import _to_null_terminated_utf8, _validate_ptr
 from pyautd3.utils import Duration
 
 from pyautd3_link_soem.adapter import EtherCATAdapter
-from pyautd3_link_soem.native_methods.autd3_link_soem import ProcessPriority, SyncMode, TimerStrategy
+from pyautd3_link_soem.native_methods.autd3_link_soem import ProcessPriority
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as LinkSOEM
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import SOEMOption as SOEMOption_
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as Status_
@@ -24,8 +25,6 @@ class SOEMOption:
     buf_size: int
     send_cycle: Duration
     sync0_cycle: Duration
-    timer_strategy: TimerStrategy
-    sync_mode: SyncMode
     sync_tolerance: Duration
     sync_timeout: Duration
     state_check_interval: Duration
@@ -39,8 +38,6 @@ class SOEMOption:
         buf_size: int = 32,
         send_cycle: Duration | None = None,
         sync0_cycle: Duration | None = None,
-        timer_strategy: TimerStrategy = TimerStrategy.SpinSleep,
-        sync_mode: SyncMode = SyncMode.DC,
         sync_tolerance: Duration | None = None,
         sync_timeout: Duration | None = None,
         state_check_interval: Duration | None = None,
@@ -51,8 +48,6 @@ class SOEMOption:
         self.buf_size = buf_size
         self.send_cycle = send_cycle or Duration.from_millis(1)
         self.sync0_cycle = sync0_cycle or Duration.from_millis(1)
-        self.timer_strategy = timer_strategy
-        self.sync_mode = sync_mode
         self.sync_tolerance = sync_tolerance or Duration.from_micros(1)
         self.sync_timeout = sync_timeout or Duration.from_secs(10)
         self.state_check_interval = state_check_interval or Duration.from_millis(100)
@@ -65,11 +60,9 @@ class SOEMOption:
             self.buf_size,
             self.send_cycle._inner,
             self.sync0_cycle._inner,
-            self.sync_mode,
             self.process_priority,
             self.thread_priority,
             self.state_check_interval._inner,
-            self.timer_strategy,
             self.sync_tolerance._inner,
             self.sync_timeout._inner,
         )
@@ -78,6 +71,7 @@ class SOEMOption:
 class SOEM(Link):
     _err_handler: Callable[[int, Status], None]
     _option: SOEMOption
+    _sleeper: SleeperWrap
 
     @staticmethod
     def enumerate_adapters() -> list[EtherCATAdapter]:
@@ -100,6 +94,13 @@ class SOEM(Link):
         super().__init__()
         self._err_handler = err_handler
         self._option = option
+        self._sleeper = SpinSleeper()._inner()
+
+    @staticmethod
+    def with_sleeper(err_handler: Callable[[int, Status], None], option: SOEMOption, sleeper: SpinSleeper | StdSleeper | SpinWaitSleeper) -> "SOEM":
+        soem = SOEM(err_handler, option)
+        soem._sleeper = sleeper._inner()
+        return soem
 
     def _resolve(self: Self) -> LinkPtr:
         def callback_native(_context: ctypes.c_void_p, slave: ctypes.c_uint32, status: ctypes.c_uint8) -> None:  # pragma: no cover
@@ -115,5 +116,6 @@ class SOEM(Link):
                 self._err_handler_f,  # type: ignore[arg-type]
                 ctypes.c_void_p(0),
                 self._option._inner(),
+                self._sleeper,
             ),
         )

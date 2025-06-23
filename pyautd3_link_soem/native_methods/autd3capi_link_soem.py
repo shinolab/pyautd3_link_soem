@@ -2,7 +2,7 @@ import ctypes
 import threading
 from pathlib import Path
 
-from pyautd3.native_methods.autd3capi_driver import Duration, ResultLink, ResultStatus
+from pyautd3.native_methods.autd3capi_driver import Duration, ResultLink, ResultStatus, SleeperWrap
 
 from pyautd3_link_soem.native_methods.autd3_link_soem import Status
 
@@ -13,12 +13,18 @@ class EthernetAdaptersPtr(ctypes.Structure):
     def __eq__(self, other: object) -> bool:
         return isinstance(other, EthernetAdaptersPtr) and self._fields_ == other._fields_  # pragma: no cover
 
+    def __hash__(self) -> int:
+        return super().__hash__()  # pragma: no cover
+
 
 class ThreadPriorityPtr(ctypes.Structure):
     _fields_ = [("value", ctypes.c_void_p)]
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, ThreadPriorityPtr) and self._fields_ == other._fields_  # pragma: no cover
+
+    def __hash__(self) -> int:
+        return super().__hash__()  # pragma: no cover
 
 
 class SOEMOption(ctypes.Structure):
@@ -27,17 +33,18 @@ class SOEMOption(ctypes.Structure):
         ("buf_size", ctypes.c_uint32),
         ("send_cycle", Duration),
         ("sync0_cycle", Duration),
-        ("sync_mode", ctypes.c_uint8),
         ("process_priority", ctypes.c_uint8),
         ("thread_priority", ThreadPriorityPtr),
         ("state_check_interval", Duration),
-        ("timer_strategy", ctypes.c_uint8),
         ("sync_tolerance", Duration),
         ("sync_timeout", Duration),
     ]
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SOEMOption) and self._fields_ == other._fields_  # pragma: no cover
+
+    def __hash__(self) -> int:
+        return super().__hash__()  # pragma: no cover
 
 
 class Singleton(type):
@@ -74,7 +81,7 @@ class NativeMethods(metaclass=Singleton):
         self.dll.AUTDLinkSOEMTracingInitWithFile.argtypes = [ctypes.c_char_p]
         self.dll.AUTDLinkSOEMTracingInitWithFile.restype = ResultStatus
 
-        self.dll.AUTDLinkSOEM.argtypes = [ctypes.c_void_p, ctypes.c_void_p, SOEMOption]
+        self.dll.AUTDLinkSOEM.argtypes = [ctypes.c_void_p, ctypes.c_void_p, SOEMOption, SleeperWrap]
         self.dll.AUTDLinkSOEM.restype = ResultLink
 
         self.dll.AUTDLinkSOEMIsDefault.argtypes = [SOEMOption]
@@ -113,8 +120,8 @@ class NativeMethods(metaclass=Singleton):
     def link_soem_tracing_init_with_file(self, path: bytes) -> ResultStatus:
         return self.dll.AUTDLinkSOEMTracingInitWithFile(path)
 
-    def link_soem(self, err_handler: ctypes.c_void_p, err_context: ctypes.c_void_p, option: SOEMOption) -> ResultLink:
-        return self.dll.AUTDLinkSOEM(err_handler, err_context, option)
+    def link_soem(self, err_handler: ctypes.c_void_p, err_context: ctypes.c_void_p, option: SOEMOption, sleeper: SleeperWrap) -> ResultLink:
+        return self.dll.AUTDLinkSOEM(err_handler, err_context, option, sleeper)
 
     def link_soem_is_default(self, option: SOEMOption) -> ctypes.c_bool:
         return self.dll.AUTDLinkSOEMIsDefault(option)

@@ -22,22 +22,3 @@ class ProcessPriority(enum.IntEnum):
     @classmethod
     def from_param(cls, obj):
         return int(obj)  # pragma: no cover
-
-
-class SyncMode(enum.IntEnum):
-    DC = 0
-    FreeRun = 1
-
-    @classmethod
-    def from_param(cls, obj):
-        return int(obj)  # pragma: no cover
-
-
-class TimerStrategy(enum.IntEnum):
-    SpinSleep = 0
-    StdSleep = 1
-    SpinWait = 2
-
-    @classmethod
-    def from_param(cls, obj):
-        return int(obj)  # pragma: no cover

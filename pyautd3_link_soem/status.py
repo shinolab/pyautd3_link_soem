@@ -27,6 +27,9 @@ class Status(metaclass=ConstantADT):
             return False
         return self._inner == other._inner
 
+    def __hash__(self: Self) -> int:
+        return self._inner.__hash__()  # pragma: no cover
+
     @staticmethod
     def Lost() -> "Status":  # noqa: N802
         return Status.__private_new__(Status_.Lost, "")
