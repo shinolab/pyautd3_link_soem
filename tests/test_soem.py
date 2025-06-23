@@ -1,7 +1,7 @@
 import pytest
-from pyautd3 import tracing_init
+from pyautd3.controller import StdSleeper
 
-from pyautd3_link_soem import SOEM, RemoteSOEM, Status, ThreadPriority
+from pyautd3_link_soem import SOEM, RemoteSOEM, Status, ThreadPriority, tracing_init
 from pyautd3_link_soem.local import SOEMOption
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as NativeSOEM
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import Status as Status_
@@ -63,6 +63,13 @@ def test_soem():
         print(f"slave: {slave}, status: {status}")
 
     _ = SOEM(err_handler, SOEMOption())
+
+
+def test_soem_with_sleeper():
+    def err_handler(slave: int, status: Status) -> None:
+        print(f"slave: {slave}, status: {status}")
+
+    _ = SOEM.with_sleeper(err_handler, SOEMOption(), StdSleeper())
 
 
 def test_remote_soem():
