@@ -9,6 +9,7 @@ from pyautd3.native_methods.utils import _to_null_terminated_utf8, _validate_ptr
 from pyautd3.utils import Duration
 
 from pyautd3_link_soem.adapter import EtherCATAdapter
+from pyautd3_link_soem.core_id import CoreId
 from pyautd3_link_soem.native_methods.autd3_link_soem import ProcessPriority
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import NativeMethods as LinkSOEM
 from pyautd3_link_soem.native_methods.autd3capi_link_soem import SOEMOption as SOEMOption_
@@ -30,12 +31,13 @@ class SOEMOption:
     state_check_interval: Duration
     process_priority: ProcessPriority
     thread_priority: ThreadPriorityPtr
+    affinity: CoreId | None
 
     def __init__(
         self: Self,
         *,
         ifname: str = "",
-        buf_size: int = 32,
+        buf_size: int = 16,
         send_cycle: Duration | None = None,
         sync0_cycle: Duration | None = None,
         sync_tolerance: Duration | None = None,
@@ -43,6 +45,7 @@ class SOEMOption:
         state_check_interval: Duration | None = None,
         process_priority: ProcessPriority = ProcessPriority.High,
         thread_priority: ThreadPriorityPtr | None = None,
+        affinity: CoreId | None = None,
     ) -> None:
         self.ifname = ifname
         self.buf_size = buf_size
@@ -53,6 +56,7 @@ class SOEMOption:
         self.state_check_interval = state_check_interval or Duration.from_millis(100)
         self.process_priority = process_priority
         self.thread_priority = thread_priority or ThreadPriority.Max
+        self.affinity = affinity
 
     def _inner(self: Self) -> SOEMOption_:
         return SOEMOption_(
@@ -65,6 +69,7 @@ class SOEMOption:
             self.state_check_interval._inner,
             self.sync_tolerance._inner,
             self.sync_timeout._inner,
+            self.affinity.id if self.affinity else -1,
         )
 
 
