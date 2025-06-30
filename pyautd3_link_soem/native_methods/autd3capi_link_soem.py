@@ -38,6 +38,7 @@ class SOEMOption(ctypes.Structure):
         ("state_check_interval", Duration),
         ("sync_tolerance", Duration),
         ("sync_timeout", Duration),
+        ("affinity", ctypes.c_int32),
     ]
 
     def __eq__(self, other: object) -> bool:
